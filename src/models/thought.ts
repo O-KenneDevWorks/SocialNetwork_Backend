@@ -44,7 +44,7 @@ const thoughtSchema = new Schema<IThought>(
     reactions: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Reaction',
+        ref: 'reactions',
       },
     ],
   },
@@ -68,6 +68,7 @@ thoughtSchema
   });
 
 // Initialize our User model
-const Thought = model('thought', thoughtSchema);
-
+console.log('Registering Thought model');
+const Thought = model<IThought>('Thought', thoughtSchema);
+console.log('Thought model registered');
 export default Thought;

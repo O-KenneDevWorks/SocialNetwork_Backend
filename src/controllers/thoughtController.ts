@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import Thought from '../models/thought.js';  // Ensure the import is correct
+import {User, Thought } from '../models/index.js';
+// import User from '../models/user.js';
 
 // Get all thoughts
 export const getThoughts = async (_req: Request, res: Response): Promise<void> => {
@@ -14,26 +15,67 @@ export const getThoughts = async (_req: Request, res: Response): Promise<void> =
 // Get a single thought by ID
 export const getSingleThought = async (req: Request, res: Response): Promise<void> => {
   try {
-    const thought = await Thought.findById(req.params.thoughtId);
-    if (!thought) {
-      res.status(404).json({ message: 'No thought with that ID' });
+    // Create a new thought from the request body
+    const newThought = await Thought.create(req.body);
+    console.log("Thought Created: ", newThought);
+
+    // Find the user by username and update their thoughts array
+    const userUpdate = await User.findOneAndUpdate(
+      { username: req.body.username },  // assuming username is passed in the request body
+      { $push: { thoughts: newThought._id } },  // push the new thought's ID to the user's thoughts array
+      { new: true }  // return the updated user document
+    );
+    console.log("user Update: ", userUpdate);
+
+    if (!userUpdate) {
+      res.status(404).json({ message: 'User not found' });
       return;
     }
-    res.json(thought);
+
+    // Respond with the newly created thought
+    res.status(201).json(newThought);
   } catch (err) {
-    res.status(500).json(err);
-  }
+    if (err instanceof Error) { // Type guard
+        res.status(500).json({ error: err.message });
+      } else {
+        res.status(500).json({ error: "An unexpected error occurred" });
+      }
+    }
 };
 
 // Create a new thought
 export const createThought = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const newThought = await Thought.create(req.body);
-    res.status(201).json(newThought);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-};
+    try {
+        // Create a new thought from the request body
+        const newThought = await Thought.create({
+          thoughtText: req.body.thoughtText,
+          username: req.body.username,
+        });
+    
+        // Update the user's thoughts array with the new thought's ID
+        const userUpdate = await User.findOneAndUpdate(
+          { username: req.body.username }, // Using username to find user; ensure it's unique or use _id
+          { $push: { thoughts: newThought._id } }, // Push the new thought's ID to the user's thoughts array
+          { new: true }  // Returns the updated user document
+        );
+    
+        if (!userUpdate) {
+          // If no user is found or the update fails
+          res.status(404).json({ message: 'User not found, thought not linked' });
+          return;
+        }
+    
+        // Respond with the newly created thought
+        res.status(201).json(newThought);
+      } catch (err) {
+        if (err instanceof Error) {
+          // Improved error handling with more specific error information
+          res.status(500).json({ error: 'Internal Server Error', details: err.message });
+        } else {
+          res.status(500).json({ error: "An unexpected error occurred" });
+        }
+      }
+    };
 
 // Update an existing thought by ID
 export const updateThought = async (req: Request, res: Response): Promise<void> => {

@@ -15,17 +15,21 @@ import { Request, Response } from 'express';
   // Get a single user
   export const getSingleUser = async (req: Request, res: Response) => {
     try {
+      console.log('Fetching user with ID:', req.params.userId);
       const user = await User.findById(req.params.userId).populate('thoughts').populate('friends');
-
-
+      
       if (!user) {
         res.status(404).json({ message: 'No user with that ID' });
+        return;
       }
-
       res.json(user);
     } catch (err) {
-      res.status(500).json(err);
-      
+      if (err instanceof Error) { // Type guard
+        console.error("Error fetching user:", err);
+        res.status(500).json({ error: "Internal Server Error", details: err.message });
+      } else {
+        res.status(500).json({ error: "An unexpected error occurred" });
+      }
     }
   }
 

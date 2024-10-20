@@ -18,6 +18,7 @@
 */
 import { Schema, model, Document, Types } from 'mongoose';
 
+
 interface IUser extends Document {
   username: string;
   email: string;
@@ -72,6 +73,6 @@ userSchema
   })
 
 // Initialize our User model
-const User = model<IUser>('user', userSchema);
+const User = model<IUser>('User', userSchema);
 
 export default User;

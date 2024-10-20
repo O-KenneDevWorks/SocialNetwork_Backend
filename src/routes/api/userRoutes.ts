@@ -26,8 +26,10 @@ DELETE to remove a friend from a user's friend list
 
 import { Router } from 'express';
 const router = Router();
-import { getUsers, getSingleUser, createUser, updateSingleUser, 
-    deleteUser, addFriend, deleteFriend } from '../../controllers/userController';
+
+import { getUsers, getSingleUser, createUser, 
+    updateSingleUser, deleteUser, addFriend, 
+    deleteFriend } from '../../controllers/userController.js';
 
 // GET all users
 router.route('/').get(getUsers)

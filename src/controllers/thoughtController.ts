@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Thought from '../models/thought';  // Ensure the import is correct
+import Thought from '../models/thought.js';  // Ensure the import is correct
 
 // Get all thoughts
 export const getThoughts = async (_req: Request, res: Response): Promise<void> => {

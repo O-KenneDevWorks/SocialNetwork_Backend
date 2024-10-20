@@ -16,3 +16,38 @@
 
     This will not be a model, but rather will be used as the reaction field's subdocument schema in the Thought model.
 */
+
+import { Schema, model, Document } from 'mongoose';
+
+interface IReaction extends Document {
+  reactionBody: string;
+  username: string;
+  createdAt: Date;
+}
+
+const reactionSchema = new Schema<IReaction>(
+  {
+    reactionBody: {
+      type: String,
+      required: true,
+      maxlength: 280,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    toJSON: {
+      getters: true,
+    },
+  }
+);
+
+const Reaction = model<IReaction>('Reaction', reactionSchema);
+
+export default Reaction;

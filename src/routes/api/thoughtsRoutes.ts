@@ -22,3 +22,31 @@ POST to create a reaction stored in a single thought's reactions array field
 
 DELETE to pull and remove a reaction by the reaction's reactionId value
  */
+
+import { Router } from 'express';
+import {
+  getThoughts,
+  getSingleThought,
+  createThought,
+  updateThought,
+  deleteThought,
+} from '../../controllers/thoughtController.js';
+
+const router = Router();
+
+// GET all thoughts
+router.get('/', getThoughts);
+
+// GET a single thought by its _id
+router.get('/:thoughtId', getSingleThought);
+
+// POST a new thought
+router.post('/', createThought);
+
+// PUT to update a thought by its _id
+router.put('/:thoughtId', updateThought);
+
+// DELETE to remove a thought by its _id
+router.delete('/:thoughtId', deleteThought);
+
+export default router;

@@ -30,6 +30,8 @@ import {
   createThought,
   updateThought,
   deleteThought,
+  addReaction,
+  removeReaction,
 } from '../../controllers/thoughtController.js';
 
 const router = Router();
@@ -48,5 +50,11 @@ router.put('/:thoughtId', updateThought);
 
 // DELETE to remove a thought by its _id
 router.delete('/:thoughtId', deleteThought);
+
+// POST to create a reaction stored in a single thought's reactions array field
+router.post('/:thoughtId/reactions', addReaction);
+
+// DELETE to pull and remove a reaction by the reaction's reactionId value
+router.delete('/:thoughtId/reactions/:reactionId', removeReaction)
 
 export default router;

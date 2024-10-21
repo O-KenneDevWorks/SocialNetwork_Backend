@@ -14,34 +14,26 @@ export const getThoughts = async (_req: Request, res: Response): Promise<void> =
 
 // Get a single thought by ID
 export const getSingleThought = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Create a new thought from the request body
-    const newThought = await Thought.create(req.body);
-    console.log("Thought Created: ", newThought);
-
-    // Find the user by username and update their thoughts array
-    const userUpdate = await User.findOneAndUpdate(
-      { username: req.body.username },  // assuming username is passed in the request body
-      { $push: { thoughts: newThought._id } },  // push the new thought's ID to the user's thoughts array
-      { new: true }  // return the updated user document
-    );
-    console.log("user Update: ", userUpdate);
-
-    if (!userUpdate) {
-      res.status(404).json({ message: 'User not found' });
-      return;
-    }
-
-    // Respond with the newly created thought
-    res.status(201).json(newThought);
-  } catch (err) {
-    if (err instanceof Error) { // Type guard
-        res.status(500).json({ error: err.message });
+    try {
+      // Fetch the thought by ID provided in the route parameter
+      const thought = await Thought.findById(req.params.thoughtId).populate('reactions');
+  
+      if (!thought) {
+        res.status(404).json({ message: 'No thought found with that ID' });
+        return;
+      }
+  
+      // Respond with the found thought
+      res.status(200).json(thought);
+    } catch (err) {
+      if (err instanceof Error) { // Type guard
+        console.error("Error fetching thought:", err);
+        res.status(500).json({ error: "Internal Server Error", details: err.message });
       } else {
         res.status(500).json({ error: "An unexpected error occurred" });
       }
     }
-};
+  };
 
 // Create a new thought
 export const createThought = async (req: Request, res: Response): Promise<void> => {

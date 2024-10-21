@@ -64,7 +64,7 @@ import { Request, Response } from 'express';
     try {
       const user = await User.findOneAndUpdate(
         { name: req.params.name },
-        req.body.update,
+        req.body,
         { new: true, runValidators: true }
       );
       

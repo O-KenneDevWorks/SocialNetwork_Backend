@@ -1,43 +1,47 @@
-import connection from '../config/connection.js';
-import User from '../models/user.js';
-import Thought from '../models/thought.js';
+import mongoose from 'mongoose';
+import User from '../models/user.js';  // Update the path to where your User model is located
+import Thought from '../models/thought.js';  // Update the path to where your Thought model is located
 
-// Database connection string
-connection.on('error', (err) => err);
-  
-connection.once('open', async () => {
-    console.log('connected');
+// MongoDB connection string
+const mongoURI = 'mongodb://127.0.0.1:27017/SocialNetwork';
+
+mongoose.connect(mongoURI)
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.log(err));
+
+async function seedDB() {
+  try {
     // Clear existing data
     await User.deleteMany({});
     await Thought.deleteMany({});
 
-    // Create sample users
-    await User.create([
+    // Users to be added
+    const users = await User.create([
       { username: "JohnDoe", email: "john@example.com" },
-      { username: "JaneDoe", email: "jane@example.com" }
+      { username: "JaneDoe", email: "jane@example.com" },
+      { username: "Alice", email: "alice@example.com" },
+      { username: "Bob", email: "bob@example.com" }
     ]);
 
-    // Create sample thoughts with embedded reactions
-    await Thought.create([
-        { 
-            thoughtText: "What a wonderful day!", 
-            username: "JohnDoe", 
-            createdAt: new Date(),
-            reactions: [
-                { reactionBody: "I totally agree!", username: "JaneDoe", createdAt: new Date() }
-            ]
-        },
-        { 
-            thoughtText: "Learning Mongoose is fun!", 
-            username: "JaneDoe", 
-            createdAt: new Date(),
-            reactions: [
-                { reactionBody: "Indeed it is!", username: "JohnDoe", createdAt: new Date() }
-            ]
-        }
+    console.log('Users added:', users);
+
+    // Thoughts to be added
+    const thoughts = await Thought.create([
+      { thoughtText: "It's a great day to code!", username: "JohnDoe" },
+      { thoughtText: "I love MongoDB!", username: "JaneDoe" },
+      { thoughtText: "Express is awesome!", username: "Alice" },
+      { thoughtText: "Typescript is amazing!", username: "Bob" }
     ]);
 
+    console.log('Thoughts added:', thoughts);
 
-    console.log("Database has been seeded!");
-    process.exit(0);
-})
+    // Close the connection
+    mongoose.disconnect();
+    console.log('Database seeded and connection closed');
+  } catch (err) {
+    console.error('Error seeding database:', err);
+    mongoose.disconnect();
+  }
+}
+
+seedDB();

@@ -19,7 +19,7 @@
 
 import { Schema, Document } from 'mongoose';
 
-interface IReaction extends Document {
+export interface IReaction extends Document {
   reactionBody: string;
   username: string;
   createdAt: Date;

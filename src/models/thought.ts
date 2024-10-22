@@ -15,15 +15,15 @@
 
     Create a virtual called reactionCount that retrieves the length of the thought's reactions array field on query.
 */
-import { Schema, model, Document, Types } from 'mongoose';
-
+import { Schema, model, Document } from 'mongoose';
+import { IReaction } from './reaction.js';
 import { reactionSchema } from './reaction.js';
 
 interface IThought extends Document {
   thoughtText: string;
   createdAt: Date;
   username: string;
-  reactions: Types.ObjectId[];
+  reactions: IReaction[];
 }
 
 // Schema to create User model
@@ -44,7 +44,7 @@ const thoughtSchema = new Schema<IThought>(
       required: true,
     },
     reactions: [
-      [reactionSchema]
+      reactionSchema
     ],
   },
   {
